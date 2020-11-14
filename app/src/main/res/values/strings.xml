@@ -3,4 +3,6 @@
     <string name="mic_text">mic picture-button</string>
     <string name="russian">Русский</string>
     <string name="english">English</string>
+    <string name="send_button_text">Send</string>
+    <string name="unknown_command_error_text">Command is not recognised</string>
 </resources>

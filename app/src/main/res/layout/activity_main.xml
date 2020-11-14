@@ -10,7 +10,8 @@
             android:layout_height="165dp"
             android:src="@drawable/ic_mic"
             android:contentDescription="@string/mic_text"
-            android:layout_centerInParent="true" />
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true" />
 
     <ProgressBar
             android:id="@+id/progressBar"
@@ -71,6 +72,30 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/radioEnglish" />
     </RadioGroup>
+
+    <Button
+            android:text="@string/send_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/sendButton"
+            android:layout_alignRight="@+id/imageView"
+            android:layout_marginRight="-105dp"
+            android:layout_marginEnd="-105dp"
+            android:layout_alignEnd="@+id/imageView"
+            android:layout_marginTop="206dp"
+            android:layout_below="@+id/imageView"
+            android:onClick="sendCommand" />
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/errorText"
+            android:layout_alignRight="@+id/textView"
+            android:layout_marginRight="84dp"
+            android:layout_marginEnd="84dp"
+            android:layout_alignEnd="@+id/textView"
+            android:layout_marginTop="3dp"
+            android:layout_below="@+id/textView" />
 </RelativeLayout>
 <!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
 <!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->

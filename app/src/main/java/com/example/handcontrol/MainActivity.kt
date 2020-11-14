@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
@@ -14,7 +15,6 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -25,7 +25,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var speech: SpeechRecognizer
     private lateinit var recognizerIntent: Intent
     private lateinit var langSelectRadioGroup: RadioGroup
+    private lateinit var errorText: TextView
+    private lateinit var sendButton: Button
     private var logTag = "VoiceRecognitionActivity"
+    private var currentCommand: Command? = null
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +36,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         title = "VoiceRecognition"
         returnedText = findViewById(R.id.textView)
+        errorText = findViewById(R.id.errorText)
+        errorText.setTextColor(Color.RED)
+        sendButton = findViewById(R.id.sendButton)
         progressBar = findViewById(R.id.progressBar)
         recordButton = findViewById(R.id.imageView)
         langSelectRadioGroup = findViewById(R.id.radioLang)
@@ -52,8 +58,8 @@ class MainActivity : AppCompatActivity() {
         langSelectRadioGroup.setOnCheckedChangeListener { group, id ->
             recognizerIntent.putExtra(
                 RecognizerIntent.EXTRA_LANGUAGE, when (findViewById<RadioButton>(id).text) {
-                    "Русский" -> "RU-ru"
-                    else -> "US-en"
+                    "Русский" -> RUSSIAN_LOCALE_TEXT
+                    else -> ENGLISH_LOCALE_TEXT
                 }
             )
         }
@@ -123,11 +129,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun getListener() = object : RecognitionListener {
         override fun onReadyForSpeech(params: Bundle?) {
-            Unit //"Not yet implemented")
         }
 
         override fun onBeginningOfSpeech() {
-            Unit //"Not yet implemented")
         }
 
         override fun onRmsChanged(rmsdB: Float) {
@@ -136,11 +140,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onBufferReceived(buffer: ByteArray?) {
-            Unit //"Not yet implemented")
         }
 
         override fun onEndOfSpeech() {
-            Unit //"Not yet implemented")
         }
 
         override fun onError(error: Int) {
@@ -152,18 +154,41 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onResults(results: Bundle?) {
-            results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()?.let {
-                returnedText.text = it
+            val commandText =
+                results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
+            currentCommand = commandText?.let {
+                when (recognizerIntent.extras?.get(RecognizerIntent.EXTRA_LANGUAGE)) {
+                    RUSSIAN_LOCALE_TEXT -> Command.getRussianCommandIgnoreCase(commandText)
+                    else -> Command.getEnglishCommandIgnoreCase(commandText)
+                }
+            }
+
+            returnedText.text = commandText ?: ""
+            if (currentCommand == null) {
+                errorText.text =
+                    getString(R.string.unknown_command_error_text) // TODO provide option to show available commands
+                sendButton.isEnabled = false
+            } else {
+                errorText.text = ""
+                sendButton.isEnabled = true
+
             }
         }
 
         override fun onPartialResults(partialResults: Bundle?) {
-            Unit //"Not yet implemented")
         }
 
         override fun onEvent(eventType: Int, params: Bundle?) {
-            Unit //"Not yet implemented")
         }
 
+    }
+
+    fun sendCommand(view: View) {
+        // TODO
+    }
+
+    companion object {
+        private const val RUSSIAN_LOCALE_TEXT = "RU-ru"
+        private const val ENGLISH_LOCALE_TEXT = "US-en"
     }
 }
